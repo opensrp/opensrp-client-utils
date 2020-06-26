@@ -1,14 +1,23 @@
 apply plugin: 'com.android.library'
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
+
+
+jacoco {
+    toolVersion = "0.8.2"
+}
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    compileSdkVersion androidCompileSdkVersion
+    buildToolsVersion androidBuildToolsVersion
+
+    defaultPublishConfig !isReleaseBuild() ? "debug" : "release"
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 29
+        minSdkVersion androidMinSdkVersion
+        targetSdkVersion androidTargetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName version
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -17,16 +26,83 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            testCoverageEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+
+        debug {
+            testCoverageEnabled true
+            minifyEnabled false
+        }
     }
+
+    testOptions.unitTests.includeAndroidResources = true
+    lintOptions.abortOnError = false
 }
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'com.android.support:appcompat-v7:28.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
 }
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+    testLogging {
+        // to see the exceptions of failed tests in Travis-CI console.
+        exceptionFormat = 'full'
+    }
+}
+
+
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    getReports().getXml().setDestination(file("${buildDir}/reports/jacoco/jacocoRootReport/merged.xml"))
+    getReports().getHtml().setDestination(file("${buildDir}/reports/jacoco/jacocoRootReport/html"))
+
+    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*', '**/*$ViewBinder*.*']
+    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug", excludes: fileFilter)
+    def mainSrc = "$project.projectDir/src/main/java"
+
+    sourceDirectories.setFrom(files([mainSrc]))
+    classDirectories.setFrom(files([debugTree]))
+    executionData.setFrom(fileTree(dir: project.buildDir, includes: [
+            'jacoco/testDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
+    ]))
+    sourceDirectories.setFrom([mainSrc])
+}
+
+
+coveralls {
+    jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/merged.xml"
+    // Re-add the line below if coveralls still cannot shows "No source file found on the project: "p2p-sync"
+    // after adding some code files
+    //sourceDirs += ["src/main/java"]
+}
+
+def isReleaseBuild() {
+    return version.contains("SNAPSHOT") == false
+}
+
+task printTasks {
+    def projects = project.allprojects {}
+    def reportT = project.tasks.withType(JacocoReport).findAll {
+        it instanceof JacocoReport
+    }
+
+    println "PROJECT TASKS"
+    def tSize = reportT.size()
+    println "SIZE : $tSize"
+    reportT.each {
+        println "$it"
+    }
+}
+
+apply from: '../maven.gradle'
