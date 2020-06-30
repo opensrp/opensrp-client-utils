@@ -91,18 +91,4 @@ def isReleaseBuild() {
     return version.contains("SNAPSHOT") == false
 }
 
-task printTasks {
-    def projects = project.allprojects {}
-    def reportT = project.tasks.withType(JacocoReport).findAll {
-        it instanceof JacocoReport
-    }
-
-    println "PROJECT TASKS"
-    def tSize = reportT.size()
-    println "SIZE : $tSize"
-    reportT.each {
-        println "$it"
-    }
-}
-
 apply from: '../maven.gradle'
