@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by Ephraim Kigamba - nek.eam@gmail.com on 26-06-2020.
  */
-public interface ClientForm {
+public interface ClientFormContract {
 
     /*
     TODO:
