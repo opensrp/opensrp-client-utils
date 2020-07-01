@@ -73,6 +73,8 @@ public interface ClientFormContract {
 
         int getId();
 
+        void setId(int id);
+
         String getVersion();
 
         void setVersion(String version);
