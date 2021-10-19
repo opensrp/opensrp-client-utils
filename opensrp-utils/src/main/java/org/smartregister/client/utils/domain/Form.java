@@ -28,6 +28,10 @@ public class Form implements Serializable {
 
     private Set<String> disabledFields;
 
+    private boolean hideNextIcon = false;
+    private boolean hidePreviousIcon = false;
+    private boolean showNextInToolbarWhenWizard = false;
+
     private static String datePickerDisplayFormat;
 
     public String getName() {
@@ -148,5 +152,29 @@ public class Form implements Serializable {
 
     public void setDatePickerDisplayFormat(String datePickerDisplayFormat) {
         Form.datePickerDisplayFormat = datePickerDisplayFormat;
+    }
+
+    public boolean isHideNextIcon() {
+        return hideNextIcon;
+    }
+
+    public void setHideNextIcon(boolean hideNextIcon) {
+        this.hideNextIcon = hideNextIcon;
+    }
+
+    public boolean isHidePreviousIcon() {
+        return hidePreviousIcon;
+    }
+
+    public void setHidePreviousIcon(boolean hidePreviousIcon) {
+        this.hidePreviousIcon = hidePreviousIcon;
+    }
+
+    public boolean isShowNextInToolbarWhenWizard() {
+        return showNextInToolbarWhenWizard;
+    }
+
+    public void setShowNextInToolbarWhenWizard(boolean showNextInToolbarWhenWizard) {
+        this.showNextInToolbarWhenWizard = showNextInToolbarWhenWizard;
     }
 }
