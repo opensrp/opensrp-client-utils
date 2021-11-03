@@ -32,6 +32,8 @@ public class Form implements Serializable {
     private boolean hidePreviousIcon = false;
     private boolean showNextInToolbarWhenWizard = false;
 
+    private boolean greyOutSaveWhenFormInvalid = false;
+
     private static String datePickerDisplayFormat;
 
     public String getName() {
@@ -176,5 +178,13 @@ public class Form implements Serializable {
 
     public void setShowNextInToolbarWhenWizard(boolean showNextInToolbarWhenWizard) {
         this.showNextInToolbarWhenWizard = showNextInToolbarWhenWizard;
+    }
+
+    public boolean isGreyOutSaveWhenFormInvalid() {
+        return greyOutSaveWhenFormInvalid;
+    }
+
+    public void setGreyOutSaveWhenFormInvalid(boolean greyOutSaveWhenFormInvalid) {
+        this.greyOutSaveWhenFormInvalid = greyOutSaveWhenFormInvalid;
     }
 }
